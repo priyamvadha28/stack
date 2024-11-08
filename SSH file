@@ -1,0 +1,9 @@
+SSH
+
+ssh username@hostname_or_ip_address
+
+If key pair not generated already
+
+ssh-keygen 
+ssh-copy-id username@hostname_or_ip_address
+ssh username@hostname_or_ip_address
