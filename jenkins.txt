@@ -1,18 +1,30 @@
-pipeline {
-  agent any
-  stages {
-    stage('version') {
-      steps {
-	echo 'Stage Version'
-        
-      }
-    }
-    stage('hello') {
-      steps {
-	echo 'Stage Hello'
-        sh 'javac Test.java'
-	sh 'java Test'
-      }
-    }
-  }
-}
+Q. Create a freestyle project in Jenkins to pull a Git repository, build it and run a code and show regular build updates.
+
+Check if java is installed if not, 
+Java Intsallation in ubuntu:
+sudo apt install openjdk-17-jre-headless
+sudo apt install git
+
+Go to - Jenkins.io
+Click on download
+Under LTS version --> Ubuntu --> leads to new window --> copy paste and run each command in terminal
+copy the password
+in browser --> http://localhost:8000
+paste the password 
+install suggested plugins
+don't create --> skip and continue as admin 
+click on finish
+click on start using Jenkins
+
+Jenkins Freestyle Job: a straightforward job designed for simple automation tasks and builds.
+
+- click on new item
+- name it
+- click on freestyle project
+- under general --> source code management --> select git --> add repo url
+
+the repo needs to contain an main.py --> some simple application
+
+- give save
+- click on build now
+- click on console output

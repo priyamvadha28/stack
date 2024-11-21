@@ -1,0 +1,32 @@
+Q. Create a dockerfile --> docker image --> docker container. 
+
+(hub.docker.com)
+
+
+mkdir myapp
+cd myapp
+
+echo "Hello world!">index.html
+cat index.html
+
+touch Dockerfile
+vi Dockerfile
+
+write this --> 
+FROM nginx
+COPY index.html /usr/share/nginx/html
+
+type this to exit --> :wq
+
+sudo service docker start
+
+docker build -t myapp .
+
+docker images
+
+docker run -d -p 8080:80 myapp
+
+docker ps
+
+http://localhost:8080
+
