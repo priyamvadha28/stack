@@ -1,7 +1,2 @@
-# touch requirements.txt
-Flask==2.0.1
-Werkzeug==2.0.1
-
-docker build -t fapp2 .
-
-docker run -p 5000:5000 fapp2
+Flask==2.2.3
+Werkzeug==2.2.3

@@ -1,0 +1,642 @@
+#Q1 FILE MANIPULATION
+
+chmod +x script.sh
+ (executable file)
+
+SCRIPT:
+echo Welcome to File Manipulation
+echo Enter a file name:
+read filename
+echo Creating file
+echo file created successfully!
+touch $filename
+echo "1.View File - V"
+echo "2.Update Filename - U"
+echo "3.Insert Text - I"
+echo "4.Search - S"
+echo "5.Delete File - D"
+echo "6.Exit - E"
+while true;
+do
+echo Enter your choice : 
+read choice
+case "$choice" in
+	"v") cat  $filename
+	"u") echo new filename:
+		read newfile
+		mv $filename $newfile
+		filename=$newfile
+	"i") echo enter text:
+		read text
+		echo $text > $filename
+	"s") echo Searching....
+	"d") rm $filename
+
+
+# line and word count 
+
+echo Enter the filename
+read file
+c=`cat $file | wc -c`
+w=`cat $file | wc -w`
+l=`grep -c "." $file`
+echo Number of characters in $file is $c
+echo Number of words in $file is $w
+echo Number of lines in $file is $l
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Q2 JENKINS
+
+Java Intsallation in ubuntu:
+sudo apt install openjdk-17-jre-headless
+sudo apt install git
+
+Install jenkins through : java -jar jenkins.war (download war file from jenkins website)
+Set up ur account with administrator password
+Install suggested plugins
+Give Ctrl+Z and stop 
+now run ---> java -jar jenkins.war --logfile=/home/USER/jenkins.log  (replace with ur USER, *to track server logs)
+
+To transfer Jenkins server log from local to remote
+scp "jenkins.log" "user@ipaddress":"remotelog.txt"
+
+jenkins.txt (pipeline file) :
+
+pipeline {
+  agent any
+  stages {
+    stage('version') {
+      steps {
+	echo 'Stage Version'
+        
+      }
+    }
+    stage('hello') {
+      steps {
+	echo 'Stage Hello'
+        sh 'javac Test.java'
+	sh 'java Test'
+      }
+    }
+  }
+}
+
+
+
+Test.java :
+
+class Test
+{
+    public static void main(String []args)
+    {
+        System.out.println("Hello World!!");
+    }
+};
+
+========================================================= JENKINS SRC TO BIN FILE EXCHANGE =============================================
+
+ -- Create a freestyle project and copy these code to windows batch shell
+
+
+FOR WINDOWS:
+
+@echo off
+
+:: Set your project directories
+set SRC_DIR=src
+set BIN_DIR=bin
+
+:: Make sure the bin directory exists
+if not exist %BIN_DIR% mkdir %BIN_DIR%
+
+:: Compile Java files
+javac -d %BIN_DIR% %SRC_DIR%\*.java
+
+:: Optional: Print the contents of the bin directory to see the compiled files
+echo Compiled files:
+dir %BIN_DIR%
+
+
+FOR UBUNTU:
+
+#!/bin/bash
+
+# Set your project directories
+SRC_DIR="src"
+BIN_DIR="bin"
+
+# Make sure the bin directory exists
+mkdir -p $BIN_DIR
+
+# Compile Java files
+javac -d $BIN_DIR $SRC_DIR/*/.java
+
+# Optional: Print the contents of the bin directory to see the compiled files
+echo "Compiled files:"
+ls -l $BIN_DIR
+
+
+========================================================= JENKINS WITH CI/CD ============================================================
+
+Here’s a step-wise guide to set up a Python application with tests using *pytest, integrate it with Jenkins, and connect it to GitHub webhooks using **ngrok*.
+
+---
+
+### Step-Wise Guide:
+
+#### *1. Set Up Jenkins*
+1. *Install Jenkins*:
+   - Download and install Jenkins.
+   - Ensure Jenkins is running locally, e.g., on port 8080.
+
+2. *Install Plugins*:
+   - Go to *Manage Jenkins > Manage Plugins > Available Tab*.
+   - Install the following plugins:
+     - *GitHub Integration Plugin*
+     - *Pipeline Plugin*
+
+3. *Create a Pipeline Job*:
+   - Go to *Jenkins Dashboard > New Item > Pipeline*.
+   - Name the job, e.g., GitHub_Webhook_Test_Pipeline.
+   - Choose from Build triggers Github hook trigger for GITsce pooling
+---
+
+#### *2. Create Python Application and Tests*
+
+1. *Set Up Project Structure*:
+   plaintext
+   my_python_app/
+   ├── app/
+   │   ├── __init__.py
+   │   ├── main.py
+   ├── tests/
+   │   ├── __init__.py
+   │   ├── test_main.py
+   ├── requirements.txt
+   ├── Jenkinsfile
+   ├── pytest.ini
+   ├── README.md
+   
+
+2. *Sample Python Code (Application)*: app/main.py
+   python
+   def add(a, b):
+       """Adds two numbers."""
+       return a + b
+
+   def subtract(a, b):
+       """Subtracts two numbers."""
+       return a - b
+   
+
+3. *Sample Tests (Using pytest)*: tests/test_main.py
+   python
+   from app.main import add, subtract
+
+   def test_add():
+       assert add(3, 5) == 8
+       assert add(-1, 1) == 0
+
+   def test_subtract():
+       assert subtract(10, 5) == 5
+       assert subtract(0, 5) == -5
+   
+
+4. *Requirements File*: requirements.txt
+   plaintext
+   pytest
+   
+
+5. *pytest Configuration File*: pytest.ini
+   plaintext
+   [pytest]
+   addopts = -v
+   testpaths = tests
+   
+
+---
+
+#### *3. Configure Jenkins Pipeline*
+
+1. *Jenkinsfile*: Jenkinsfile
+   
+pipeline {
+    agent any
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/jai613/newRepo.git'
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                bat 'pip install -r requirements.txt'
+            }
+        }
+        stage('Run Tests') {
+            steps {
+                bat 'pytest'
+            }
+        }
+    }
+}
+   
+
+2. *Commit and Push*:
+   - Commit the Jenkinsfile and Python project to a GitHub repository.
+
+---
+
+#### *4. Configure Ngrok*
+1. *Download ngrok*:
+   - Download and install ngrok from [ngrok.com](https://ngrok.com/).
+
+2. *Authenticate ngrok*:
+   bash
+   ngrok authtoken <your-authtoken>
+   
+
+3. *Run ngrok*:
+   bash
+   ngrok http 8080
+   
+   Copy the HTTPS URL (e.g., https://<random-subdomain>.ngrok.io).
+
+---
+
+#### *5. Configure GitHub Webhook*
+1. Go to your repository’s *Settings > Webhooks*.
+2. Click *Add Webhook*.
+3. Set the *Payload URL*:
+   
+   https://<random-subdomain>.ngrok.io/github-webhook/
+   
+4. Set *Content Type* to application/json.
+5. Select the event: *Just the push event*.
+6. Save the webhook.
+
+---
+
+#### *6. Run the Pipeline*
+1. Push any change to the repository.
+2. GitHub will send a webhook to Jenkins via the ngrok URL.
+3. Jenkins will:
+   - Clone the repository.
+   - Install dependencies.
+   - Run the pytest tests.
+4. View results in Jenkins.
+
+---
+
+### Example Output:
+#### *Jenkins Console Output*
+
+[Pipeline] Start of Pipeline
+[Pipeline] stage (Clone Repository)
+Cloning repository...
+[Pipeline] stage (Install Dependencies)
+Installing pytest...
+[Pipeline] stage (Run Tests)
+Running pytest...
+tests/test_main.py::test_add PASSED
+tests/test_main.py::test_subtract PASSED
+
+
+Now your setup is complete with a Python app, pytest for testing, Jenkins for CI/CD, and GitHub webhooks for automation!
+
+(LINUX COMMANDS)
+hostname -I --> ip address
+whoami ---> username
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Q3 SSH REMOTE-LOCAL CONNECTION
+
+
+ssh-keygen -t rsa -b 2048
+ssh-copy-id username@ip
+--create a test.sh in remote system
+ssh username@ip 'bash ~/test.sh'
+
+To transfer file from remote to local: (write this command in a script file--> script.sh)
+scp "username@ip":"filename_remote" "filename_local"
+Then run the script file ---> bash script.sh
+
+To send file from local to remote: (write this command in a script file--> script.sh)
+scp "filename_local" "username@ip":"filename_remote"
+Then run the script file ---> bash script.sh
+
+to install SSH(if not present):
+
+sudo apt install openssh-server
+sudo systemctl start ssh
+sudo systemctl enable ssh
+sudo apt install openjdk-17-jdk
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+#Q4 DOCKER 
+
+
+(!CHANGES!) THERE ARE TWO COMMANDS (sudo snap install docker and sudo apt install docker.io)
+sudo snap install docker.io
+docker build -t myapp .
+
+###############################################################################################
+
+If u see docker.sock error, cd ../.. (return to base directory)
+cd /var
+cd /run
+sudo chmod 666 docker.sock
+(!CHANGES!) (This can be modified to sudo chmod 666 /var/run/docker.sock)
+
+Another way to solve permission error
+sudo usermod -aG docker$USER
+newgrp docker
+
+################################################################################################
+
+
+
+
+app.py :
+
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return "Hello from Flask!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0",port=5000)
+(!CHANGES!) (You can add endpoints if u want)
+
+
+CODE2 app.py (GET METHOD): 
+
+from flask import Flask,jsonify
+
+app = Flask(__name__)
+
+students = [
+    {"id":1,"name":"Dennis","age":20,"Major":"Computer Science"},
+    {"id": 2, "name": "Harish", "age": 20, "major": "Mathematics"},
+    {"id": 3, "name": "Badri", "age": 20, "major": "Machine Learning"}
+]
+
+
+@app.route("/")
+def home():
+    return "Hello World"
+
+@app.route("/students",methods=["GET"])
+def getStudents():
+    return jsonify(students)
+
+@app.route("/students/<int:studentId>",methods=["GET"])
+def getStudent(studentId):
+    student=None
+    for i in students:
+        if i["id"]==studentId:
+            student=i
+            break
+    if student!=None:
+        return jsonify(student)
+    else:
+        return jsonify({"error":"Student not found"}),404
+
+
+if __name__=='__main__':
+    app.run("0.0.0.0",5000)
+
+
+Dockerfile:
+
+# Use the official Python image
+FROM python:3.9
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the current directory contents into the container
+COPY . /app
+
+# Install any needed packages specified in requirements.txt
+RUN pip install -r requirements.txt
+
+# Make port 5000 available to the world outside this container
+EXPOSE 5000
+
+# Define environment variable
+ENV NAME=FlaskApp
+
+# Run app.py when the container launches
+CMD ["python", "app.py"]
+
+
+requirements.txt:
+
+Flask==2.3.3
+Werkzeug==2.3.3
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Q5 VERSION CONTROL
+
+mkdir GitEx
+cd GitEx
+
+git init
+git config --global user.name "Name"
+git config --global user.email "name@gmail.com"
+
+touch app.py
+
+Add print statement in app.py
+code .
+git add .
+git commit -m "initial commit"
+git switch -c branch1
+
+Go to app.py, change the print statement
+
+git commit -am "First commit on branch1"
+git switch master
+
+Change print stmt in app.py
+git commit -am "Second commit on master"
+git merge branch1
+
+(You could see conflict error here)
+
+Go to VSCode, choose any one option
+git commit -am "Fixed Merge Conflict"
+Conflict Resolved and Merged
+
+git log --oneline
+(To view commits)
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+#Q6 LOAD BALANCING
+
+
+========================================================LOGIC 1============================================================================
+
+app.py:
+
+from flask import Flask, jsonify
+import os
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return jsonify({
+        "message": "Hello from Flask instance",
+        "instance": os.getenv('INSTANCE_NAME', 'Unknown')
+    })
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+
+docker-compose.yml:
+
+version: '3.8'
+
+services:
+  flask1:
+    image: flask-app
+    environment:
+      - INSTANCE_NAME=Flask_Instance_1
+    ports:
+      - "5001:5000"
+
+  flask2:
+    image: flask-app
+    environment:
+      - INSTANCE_NAME=Flask_Instance_2
+    ports:
+      - "5002:5000"
+
+  flask3:
+    image: flask-app
+    environment:
+      - INSTANCE_NAME=Flask_Instance_3
+    ports:
+      - "5003:5000"
+
+Dockerfile:
+
+# Use Python as the base image
+FROM python:3.9-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy files to the container
+COPY . .
+
+# Install dependencies
+RUN pip install flask
+
+# Expose the Flask port
+EXPOSE 5000
+
+# Start the Flask app
+CMD ["python", "app.py"]
+
+Commands to run:
+
+sudo apt-get install nginx
+sudo apt-get install apache2-utils
+
+docker build -t flask-app .
+docker-compose up -d
+
+nginx.conf:
+
+
+#user  nobody;
+worker_processes  1;
+
+
+#pid        logs/nginx.pid;
+
+
+events {}
+
+http {
+    log_format minimal '$remote_addr $upstream_addr';
+
+    access_log <create a custom access.log file in your folder> (eg: /Users/akash/load/custom_access.log) ;
+create a custom.log file in your folder
+    upstream flask_backend {
+        server localhost:5001;
+        server localhost:5002;
+        server localhost:5003;
+    }
+
+    server {
+        listen 80;
+
+        location / {
+            proxy_pass http://flask_backend;
+        }
+    }
+}
+
+
+===============================================================LOGIC 2=====================================================================
+
+sudo apt-get install nginx
+sudo apt-get install apache2-utils
+
+docker build -t flaskapp5 .
+docker run -d -p 5001:5000 flaskapp5
+docker run -d -p 5002:5000 flaskapp5
+docker run -d -p 5003:5000 flaskapp5
+
+ab -n 1000 -c 100 http://localhost:5001/ (takes more time)
+
+code /etc/nginx/nginx.conf
+sudo chmod o+w /etc/nginx/nginx.conf
+sudo rm /etc/nginx/sites-enabled/default
+
+sudo nginx -t
+sudo systemctl restart nginx
+
+curl http://localhost/
+ab -n 1000 -c 100 http://localhost/ (takes lesser time)
+
+docker logs containerID
+
+When a text editor or vsc opens, type this:
+
+http {
+upstream flaskapp {
+server localhost:5001;
+server localhost:5002;
+server localhost:5003;
+}
+server {
+listen 80;
+location / {
+proxy_pass http://flaskapp;
+}
+}
+}
+
+
+
+
+
+
+
+
